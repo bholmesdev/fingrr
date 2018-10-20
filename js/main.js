@@ -110,7 +110,7 @@ crosshair.add(new THREE.LineSegments(crosshairNorth, crosshairMaterial));
 crosshair.position.set(0, 0, 8);
 weapon.add(crosshair);
 
-var collidableMeshList = []
+var collidableMeshList = [];
 
 var asteroids = [];
 const vHeight = visibleHeightAtZDepth(sphereDepth, camera);
@@ -139,9 +139,20 @@ function generateAsteroid() {
 	collidableMeshList.push(asteroid);
 }
 
-setInterval(generateAsteroid, 5000);
-//generateAsteroid();
+var intervalMilli = 3000;
+var asteroidInterval = setInterval(generateAsteroid, intervalMilli);
+var sphereColors = [];
+var asteroidColors = [];
+var asteroidSpeed = 0.05;
 
+function levelUp() {
+	clearInterval(asteroidInterval);
+	asteroidInterval = setInterval(generateAsteroid, intervalMilli*=0.8)
+	asteroidSpeed += 0.005;
+	console.log("LEVEL UP");
+}
+
+var levelupInterval = setInterval(levelUp, 10000);
 var plasmaBalls = [];
 window.addEventListener("mousedown", onMouseDown);
 
@@ -323,6 +334,8 @@ var lives = 3;
 				});
 			} else {
 				console.log("GAME OVER");
+				clearInterval(asteroidInterval);
+				clearInterval(levelupInterval);
 				var gameover = new THREE.Audio(listener);
 				var goAudioLoader = new THREE.AudioLoader();
 				goAudioLoader.load( 'sounds/gameover.wav', function(buffer) {
@@ -331,6 +344,9 @@ var lives = 3;
 					gameover.setVolume(5);
 					gameover.play();
 				});
+				while(scene.children.length > 0){
+                                        scene.remove(scene.children[0]);
+                                }
 			}
 			const aIndex = asteroids.indexOf(a);
 			asteroids.splice(aIndex, 1);
@@ -338,7 +354,7 @@ var lives = 3;
 			//TODO: Iterate lives && GameOver here
 		}
 
-    		a.translateOnAxis(a.worldToLocal(new THREE.Vector3(0, 0, 0)), 0.005);
+    		a.translateOnAxis(a.worldToLocal(new THREE.Vector3(0, 0, 0)), asteroidSpeed);
   	});
   	//weapon.rotateX(0.005);
   	//weapon.rotateY(0.005);

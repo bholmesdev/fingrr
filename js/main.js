@@ -64,7 +64,7 @@ var renderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-var controls = new THREE.OrbitControls(camera, renderer.domElement);
+// var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 //setup aim-line/weapon
 var lineGeometry = new THREE.Geometry();
@@ -75,17 +75,40 @@ lineGeometry.vertices.push(
 var weapon = new THREE.Object3D();
 weapon.position.set(0, 0, 0);
 scene.add(weapon);
-var weaponCone = new THREE.Mesh(new THREE.ConeGeometry(0.01, 10, 16), new THREE.MeshBasicMaterial({
-	color: 0x5555ff
-}));
-weaponCone.position.set(0, 0, 5);
-weaponCone.rotateX(Math.PI / 2);
-weapon.add(weaponCone);
+// var weaponCone = new THREE.Mesh(new THREE.ConeGeometry(0.01, 10, 16), new THREE.MeshLambertMaterial({
+	// color: 0x5555ff
+// }));
+// weaponCone.position.set(0, 0, 5);
+// weaponCone.rotateX(Math.PI / 2);
+// weapon.add(weaponCone);
 //camera.add(weapon);
 var emitter = new THREE.Object3D();
 emitter.position.set(0, 0, 8);
 //camera.add(emitter);
 weapon.add(emitter);
+
+var crosshair = new THREE.Group();
+var crosshairMaterial = new THREE.LineBasicMaterial({
+	color: 0xffffff
+});
+var crosshairCircle = new THREE.CircleGeometry(0.25, 32);
+crosshairCircle.vertices.shift();
+crosshair.add(new THREE.LineLoop(crosshairCircle, crosshairMaterial));
+var crosshairNorth = new THREE.BufferGeometry();
+var crosshairVertices = new Float32Array([
+	0, 0.35, 0,
+	0, 0.15, 0,
+	0, -0.35, 0,
+	0, -0.15, 0,
+	0.35, 0, 0,
+	0.15, 0, 0,
+	-0.35, 0, 0,
+	-0.15, 0, 0
+]);
+crosshairNorth.addAttribute('position', new THREE.BufferAttribute(crosshairVertices, 3));
+crosshair.add(new THREE.LineSegments(crosshairNorth, crosshairMaterial));
+crosshair.position.set(0, 0, 8);
+weapon.add(crosshair);
 
 var collidableMeshList = []
 
@@ -116,7 +139,7 @@ function generateAsteroid() {
 	collidableMeshList.push(asteroid);
 }
 
-setInterval(generateAsteroid, 1000);
+setInterval(generateAsteroid, 5000);
 //generateAsteroid();
 
 var plasmaBalls = [];
@@ -177,7 +200,7 @@ function isCollision(ball) {
 }
 
 // Maximum offset of shake, per axis. Keep this small - millimetres usually.
-var max_amplitudes = new THREE.Vector3(5, 5, 5);
+var max_amplitudes = new THREE.Vector3(0.005, 0.005, 0.005);
 
 // Number of oscillations per second, per axis. 
 // Keep this lower than half your framerate to avoid temporal aliasing.

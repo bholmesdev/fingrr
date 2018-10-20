@@ -287,23 +287,31 @@ var lives = 3;
 				crash.setVolume(0.5);
 				crash.play();
 			});
-			var lifelost = new THREE.Audio(listener);
-			var llAudioLoader = new THREE.AudioLoader();
-			llAudioLoader.load( 'sounds/lifelost.wav', function(buffer) {
-				lifelost.setBuffer(buffer);
-				lifelost.setLoop(false);
-				lifelost.setVolume(1);
-				lifelost.play();
-			});
-			const aIndex = asteroids.indexOf(a);
-			asteroids.splice(aIndex, 1);
-			scene.remove(a);
 			lives--;
 			if (lives > 0) {
 				console.log("You lost a life :(");
+				var lifelost = new THREE.Audio(listener);
+				var llAudioLoader = new THREE.AudioLoader();
+				llAudioLoader.load( 'sounds/lifelost.wav', function(buffer) {
+					lifelost.setBuffer(buffer);
+					lifelost.setLoop(false);
+					lifelost.setVolume(1);
+					lifelost.play();
+				});
 			} else {
 				console.log("GAME OVER");
+				var gameover = new THREE.Audio(listener);
+				var goAudioLoader = new THREE.AudioLoader();
+				goAudioLoader.load( 'sounds/gameover.wav', function(buffer) {
+					gameover.setBuffer(buffer);
+					gameover.setLoop(false);
+					gameover.setVolume(5);
+					gameover.play();
+				});
 			}
+			const aIndex = asteroids.indexOf(a);
+			asteroids.splice(aIndex, 1);
+			scene.remove(a);
 			//TODO: Iterate lives && GameOver here
 		}
 

@@ -109,8 +109,8 @@ function generateAsteroid() {
 		transparent: true,
 		opacity: 0.5
 	})));
-	//asteroid.position.set(hAxis, vAxis, sphereDepth);
-	asteroid.position.set(0, 0, sphereDepth);
+	asteroid.position.set(hAxis, vAxis, sphereDepth);
+	//asteroid.position.set(0, 0, sphereDepth);
 	scene.add(asteroid);
 	asteroids.push(asteroid);
 	collidableMeshList.push(asteroid);

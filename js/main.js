@@ -203,7 +203,7 @@ function ShakePosition( unshakenPosition, trauma ) {
    return unshakenPosition + offset;
 }
 
-//////////////settings/////////
+//explode settings
 var movementSpeed = 80;
 var totalObjects = 1000;
 var objectSize = 10;
@@ -251,6 +251,7 @@ function ExplodeAnimation(x, y, z) {
 var speed = 500;
 var clock = new THREE.Clock();
 var delta = 0;
+var lives = 3;
 
 (function render() {
 	requestAnimationFrame(render);
@@ -297,7 +298,12 @@ var delta = 0;
 			const aIndex = asteroids.indexOf(a);
 			asteroids.splice(aIndex, 1);
 			scene.remove(a);
-			console.log("HIT!!");
+			lives--;
+			if (lives > 0) {
+				console.log("You lost a life :(");
+			} else {
+				console.log("GAME OVER");
+			}
 			//TODO: Iterate lives && GameOver here
 		}
 

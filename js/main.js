@@ -5,6 +5,10 @@
 //const hFOV = 2 * Math.atan( Math.tan( vFOV / 2 ) * aspect );
 //const width = 2 * Math.tan( ( hFOV / 2 ) ) * radius;
 
+const CAMERA_POSITION = new THREE.Vector3(0, 0, -1);
+const DEFAULT_CAMERA_SHAKE = 1;
+const SHAKE_INTENSITY = 1;
+
 const visibleHeightAtZDepth = ( depth, camera ) => {
   // compensate for cameras not positioned at z=0
   const cameraOffset = camera.position.z;
@@ -30,7 +34,7 @@ scene.add(new THREE.DirectionalLight(0xffffff, 0.5));
 
 //setup camera
 var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 10000);
-camera.position.set(0, 0, -1);
+camera.position.copy(CAMERA_POSITION);
 camera.lookAt(new THREE.Vector3(0, 0, 0));
 scene.add(camera);
 
@@ -160,7 +164,7 @@ function onMouseDown() {
 		pew.setVolume(0.5);
 		pew.play()
 	});
-  	plasmaBalls.push(plasmaBall);
+	plasmaBalls.push(plasmaBall);
 }
 
 function isCollision(ball) {
@@ -197,33 +201,6 @@ function isCollision(ball) {
 		})
 	}
 	return collision;
-}
-
-// Maximum offset of shake, per axis. Keep this small - millimetres usually.
-var max_amplitudes = new THREE.Vector3(0.005, 0.005, 0.005);
-
-// Number of oscillations per second, per axis. 
-// Keep this lower than half your framerate to avoid temporal aliasing.
-var frequencies = new THREE.Vector3(20, 20, 20);
-
-function ShakePosition( unshakenPosition, trauma ) {
-   // Making amplitude proportional to the square or cube of the input trauma
-   // helps give a gentler ramp-out to the shake, and clearly distinguishes intensities.
-   var amplitude = max_amplitudes * trauma * trauma * trauma;
-   var phases = 10 * frequencies;
-
-   var offset = new THREE.Vector3(0, 0, 0);
-   // Using trig functions gives a periodic shake, like the camera's mount
-   // has a little wobble in it like a stiff spring. Using different frequencies
-   // on each axis helps the shake look chaotic instead of repetitive.
-   offset.x = Math.cos(phases.x) * amplitude.x;
-   offset.y = Math.cos(phases.y) * amplitude.y;
-   offset.z = Math.cos(phases.z) * amplitude.z;
-
-   // You can use your favourite continuous noise function instead of cos if you like,
-   // eg. Perlin noise with different frequencies / offsets per axis.
-
-   return unshakenPosition + offset;
 }
 
 //explode settings
@@ -275,6 +252,7 @@ var speed = 500;
 var clock = new THREE.Clock();
 var delta = 0;
 var lives = 3;
+var cameraShake = 0;
 
 (function render() {
 	requestAnimationFrame(render);
@@ -310,6 +288,7 @@ var lives = 3;
 				crash.setVolume(0.5);
 				crash.play();
 			});
+			cameraShake = DEFAULT_CAMERA_SHAKE;
 			lives--;
 			if (lives > 0) {
 				console.log("You lost a life :(");
@@ -339,7 +318,16 @@ var lives = 3;
 		}
 
     		a.translateOnAxis(a.worldToLocal(new THREE.Vector3(0, 0, 0)), 0.005);
-  	});
+	  });
+	  
+	if (cameraShake >= 0) {
+		camera.position.copy(new THREE.Vector3(
+			(Math.random() - 0.5) * 2 * cameraShake * cameraShake * cameraShake * SHAKE_INTENSITY,
+			(Math.random() - 0.5) * 2 * cameraShake * cameraShake * cameraShake * SHAKE_INTENSITY,
+			(Math.random() - 0.5) * 2 * cameraShake * cameraShake * cameraShake * SHAKE_INTENSITY
+		).add(CAMERA_POSITION));
+		cameraShake -= delta;
+	}
   	//weapon.rotateX(0.005);
   	//weapon.rotateY(0.005);
   	renderer.render(scene, camera);

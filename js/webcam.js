@@ -300,6 +300,7 @@ state.emitter.on('data', function (trackingData) {
 });
 
 state.emitter.on('fire', (trackingData) => {
+    onMouseDown();
     console.log('pew', trackingData);
 });
 

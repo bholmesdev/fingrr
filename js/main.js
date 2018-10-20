@@ -1,61 +1,131 @@
-import Animations from animations
+//const vFOV = 60;
+//const radius = 1000;
+//const height = 2 * Math.tan( ( vFOV / 2 ) ) * radius;
+//const aspect = window_width / window_height;
+//const hFOV = 2 * Math.atan( Math.tan( vFOV / 2 ) * aspect );
+//const width = 2 * Math.tan( ( hFOV / 2 ) ) * radius;
 
-window.addEventListener("mousedown", onMouseDown, false)
+const visibleHeightAtZDepth = ( depth, camera ) => {
+  // compensate for cameras not positioned at z=0
+  const cameraOffset = camera.position.z;
+  if ( depth < cameraOffset ) depth -= cameraOffset;
+  else depth += cameraOffset;
 
-function onMouseDown(e) {
-  var vectorMouse = new THREE.Vector3( //vector from camera to mouse
-    -(window.innerWidth / 2 - e.clientX) * 2 / window.innerWidth,
-    (window.innerHeight / 2 - e.clientY) * 2 / window.innerHeight,
-    -1 / Math.tan(22.5 * Math.PI / 180)); //22.5 is half of camera frustum angle 45 degree
-  vectorMouse.applyQuaternion(camera.quaternion);
-  vectorMouse.normalize();
+  // vertical fov in radians
+  const vFOV = camera.fov * Math.PI / 180;
 
-  var vectorObject = new THREE.Vector3()
-  vectorObject.set(wireframe.position.x - camera.position.x,
-    wireframe.position.y - camera.position.y,
-    wireframe.position.z - camera.position.z)
-  vectorObject.normalize();
+  // Math.abs to ensure the result is always positive
+  return 2 * Math.tan( vFOV / 2 ) * Math.abs( depth );
+};
 
-  console.log(vectorObject)
-  if (vectorMouse.angleTo(vectorObject) * 180 / Math.PI < 6) {
-    //mouse's position is near object's position
+const visibleWidthAtZDepth = ( depth, camera ) => {
+  const height = visibleHeightAtZDepth( depth, camera );
+  return height * camera.aspect;
+};
 
-    explode = true
-    console.log("HUZZAH")
-  }
-}
-
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
-camera.position.set(0, 0, 100);
-camera.lookAt(0, 0, 0);
+//setup scene
 var scene = new THREE.Scene();
+scene.add(new THREE.AmbientLight(0xffffff, 0.2));
+scene.add(new THREE.DirectionalLight(0xffffff, 0.5));
 
-var renderer = new THREE.WebGLRenderer();
+//setup camera
+var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 10000);
+camera.position.set(0, 0, -1);
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+scene.add(camera);
+
+//setup background sphere
+const sphereDepth = 1000;
+var background = new THREE.Mesh(new THREE.SphereGeometry(sphereDepth, 90, 45), new THREE.MeshBasicMaterial({
+  color: "gray",
+  wireframe: true
+}));
+scene.add(background);
+
+//setup renderer
+var renderer = new THREE.WebGLRenderer({
+  antialias: true
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-var geometry = new THREE.BoxGeometry(1, 1, 1)
-var geo = new THREE.EdgesGeometry(geometry)
-var mat = new THREE.LineBasicMaterial({ color: 0x00ff00, linewidth: 2 })
-var wireframe = new THREE.LineSegments(geo, mat)
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-scene.add(wireframe);
+//setup aim-line/weapon
+var lineGeometry = new THREE.Geometry();
+lineGeometry.vertices.push(
+	new THREE.Vector3(0, 0, 0),
+	new THREE.Vector3(0, 0, 99999)
+);
+var weapon = new THREE.Object3D();
+weapon.position.set(0, 0, 0);
+scene.add(weapon);
+var weaponCone = new THREE.Mesh(new THREE.ConeGeometry(0.01, 10, 16), new THREE.MeshBasicMaterial({
+  color: 0x5555ff
+}));
+weaponCone.position.set(0, 0, 5);
+weaponCone.rotateX(Math.PI / 2);
+weapon.add(weaponCone);
+//camera.add(weapon);
+var emitter = new THREE.Object3D();
+emitter.position.set(0, 0, 8);
+//camera.add(emitter);
+weapon.add(emitter);
 
-camera.position.z = 5
+var asteroids = [];
+const vHeight = visibleHeightAtZDepth(sphereDepth, camera);
+const vWidth = visibleWidthAtZDepth(sphereDepth, camera);
 
-export function animate() {
-  requestAnimationFrame(animate)
-
-  wireframe.rotation.x += 0.01
-  wireframe.rotation.y += 0.01
-  if (explode && wireframe.scale.x < 2) {
-    console.log(wireframe)
-    wireframe.material.opacity -= 0.01
-    wireframe.material.transparent = true
-    wireframe.scale.x += 0.01
-    wireframe.scale.y += 0.01
-    wireframe.scale.z += 0.01
-  }
-
-  renderer.render(scene, camera)
+function generateAsteroids() {
+	const vAxis = -(vWidth/2) + vWidth * Math.random();
+	const hAxis = -(vHeight/2) + vHeight * Math.random();
+	const geometry = new THREE.SphereGeometry(15, 8, 6);
+	const lineGeometry = new THREE.SphereBufferGeometry(15,8,6);
+	//lineGeometry.addAttribute('position', new THREE.Float32BufferAttribute([], 3));
+	let asteroid = new THREE.Group();
+	asteroid.add(new THREE.Mesh(lineGeometry, new THREE.MeshLambertMaterial({
+		color: "red",
+		flatShading: true
+	})));
+	asteroid.add(new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({
+		color: 0xffffff,
+		transparent: true,
+		opacity: 0.5
+	})));
+	asteroid.position.set(hAxis, vAxis, sphereDepth);
+	scene.add(asteroid);
+	asteroids.push(asteroid);
 }
+
+setInterval(generateAsteroids, 1000);
+
+var plasmaBalls = [];
+window.addEventListener("mousedown", onMouseDown);
+
+function onMouseDown() {
+  let plasmaBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
+    color: "aqua"
+  }));
+  plasmaBall.position.copy(emitter.getWorldPosition()); // start position - the tip of the weapon
+  plasmaBall.quaternion.copy(weapon.quaternion); // apply camera's quaternion
+  scene.add(plasmaBall);
+  plasmaBalls.push(plasmaBall);
+}
+
+var speed = 50;
+var clock = new THREE.Clock();
+var delta = 0;
+
+(function render() {
+  requestAnimationFrame(render);
+  delta = clock.getDelta();
+  plasmaBalls.forEach(b => {
+    b.translateZ(speed * delta); // move along the local z-axis
+  });
+  asteroids.forEach(a => {
+    a.translateOnAxis(a.worldToLocal(new THREE.Vector3(0, 0, 0)), 0.005);
+  });
+  //weapon.rotateX(0.005);
+  //weapon.rotateY(0.005);
+  renderer.render(scene, camera);
+})()

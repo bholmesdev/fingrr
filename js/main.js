@@ -37,8 +37,8 @@ scene.add(camera);
 //setup background sphere
 const sphereDepth = 500;
 var background = new THREE.Mesh(new THREE.SphereGeometry(sphereDepth, 90, 45), new THREE.MeshBasicMaterial({
-  color: "gray",
-  wireframe: true
+	color: "gray",
+	wireframe: true
 }));
 scene.add(background);
 
@@ -101,8 +101,8 @@ function generateAsteroid() {
 	collidableMeshList.push(asteroid);
 }
 
-//setInterval(generateAsteroid, 1000);
-generateAsteroid();
+setInterval(generateAsteroid, 1000);
+//generateAsteroid();
 
 var plasmaBalls = [];
 window.addEventListener("mousedown", onMouseDown);
@@ -180,6 +180,51 @@ function ShakePosition( unshakenPosition, trauma ) {
    return unshakenPosition + offset;
 }
 
+//////////////settings/////////
+var movementSpeed = 80;
+var totalObjects = 1000;
+var objectSize = 10;
+var sizeRandomness = 4000;
+var colors = [0xFF0FFF, 0xCCFF00, 0xFF000F, 0x996600, 0xFFFFFF];
+var dirs = [];
+var parts = [];
+
+function ExplodeAnimation(x, y, z) {
+ 	var geometry = new THREE.Geometry();
+
+	for (i = 0; i < totalObjects; i ++) {
+	var vertex = new THREE.Vector3();
+	vertex.x = x;
+    	vertex.y = y;
+    	vertex.z = z;
+
+    	geometry.vertices.push( vertex );
+    	dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
+  	}
+  	var material = new THREE.PointsMaterial( { size: objectSize,  color: colors[Math.round(Math.random() * colors.length)] });
+  	var particles = new THREE.Points( geometry, material );
+
+  	this.object = particles;
+  	this.status = true;
+
+  	this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+  	this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+  	this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+
+  	scene.add(this.object);
+
+  	this.update = function(){
+		var pCount = totalObjects;
+      		while(pCount--) {
+			var particle =  this.object.geometry.vertices[pCount]
+        		particle.y += dirs[pCount].y;
+        		particle.x += dirs[pCount].x;
+       			particle.z += dirs[pCount].z;
+      			}
+      		this.object.geometry.verticesNeedUpdate = true;
+  	}
+}
+
 var speed = 500;
 var clock = new THREE.Clock();
 var delta = 0;
@@ -190,9 +235,15 @@ var delta = 0;
   	plasmaBalls.forEach(b => {
 		if (isCollision(b)) {
 			console.log("REMOVED BULLET AND ASTEROID");
+			parts.push(new ExplodeAnimation(b.position.x, b.position.y, b.position.z));
+
 		}
   		b.translateZ(speed * delta); // move along the local z-axis
   	});
+	var pCount = parts.length;
+        	while(pCount--) {
+        		parts[pCount].update();
+        	}
   	asteroids.forEach(a => {
 		var asteroidBox = new THREE.Box3().setFromObject(a);
 		if (asteroidBox.containsPoint(new THREE.Vector3(0, 0, 0))) {

@@ -56,7 +56,7 @@ audioLoader.load( 'sounds/background.mp3', function(buffer) {
 //setup background sphere
 const sphereDepth = 500;
 var background = new THREE.Mesh(new THREE.SphereGeometry(sphereDepth, 90, 45), new THREE.MeshBasicMaterial({
-	color: "gray",
+	color: 0x490E61,
 	wireframe: true
 }));
 scene.add(background);
@@ -119,7 +119,7 @@ var collidableMeshList = [];
 var asteroids = [];
 const vHeight = visibleHeightAtZDepth(sphereDepth, camera);
 const vWidth = visibleWidthAtZDepth(sphereDepth, camera);
-
+var asteroidColor = 0x05EAFA;
 function generateAsteroid() {
 	const vAxis = -(vWidth/2) + vWidth * Math.random();
 	const hAxis = -(vHeight/2) + vHeight * Math.random();
@@ -128,7 +128,7 @@ function generateAsteroid() {
 	//lineGeometry.addAttribute('position', new THREE.Float32BufferAttribute([], 3));
 	let asteroid = new THREE.Group();
 	asteroid.add(new THREE.Mesh(lineGeometry, new THREE.MeshLambertMaterial({
-		color: "red",
+		color: asteroidColor,
 		flatShading: true
 	})));
 	asteroid.add(new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({
@@ -145,15 +145,24 @@ function generateAsteroid() {
 
 var intervalMilli = 3000;
 var asteroidInterval = setInterval(generateAsteroid, intervalMilli);
-var sphereColors = [];
-var asteroidColors = [];
 var asteroidSpeed = 0.05;
+
+var sphereColors = [0x490E61, 0xFA1505, 0x32FA05, 0xFA056F, 0xFFF001, 0xFA056F];
+var asteroidColors = sphereColors.slice(0);
+asteroidColors.reverse();
+var sphereColorIdx = 0;
+var asteroidColorIdx = 0;
 
 function levelUp() {
 	clearInterval(asteroidInterval);
 	asteroidInterval = setInterval(generateAsteroid, intervalMilli*=0.8)
 	asteroidSpeed += 0.005;
+	sphereColorIdx++;
+	asteroidColorIdx++;
+	background.material.color.setHex(sphereColors[sphereColorIdx % sphereColors.length]);
+	asteroidColor = asteroidColors[asteroidColorIdx % asteroidColors.length];
 	console.log("LEVEL UP");
+
 }
 
 var levelupInterval = setInterval(levelUp, 10000);
@@ -262,12 +271,13 @@ function ExplodeAnimation(x, y, z) {
 var speed = 500;
 var clock = new THREE.Clock();
 var delta = 0;
-var lives = 3;
+var lives = 3000000;
 var cameraShake = 0;
-
+var isPlay = false;
 (function render() {
 	requestAnimationFrame(render);
   	delta = clock.getDelta();
+	if (!isPlay) return;
   	plasmaBalls.forEach(b => {
 		if (isCollision(b)) {
 			console.log("REMOVED BULLET AND ASTEROID");
@@ -323,9 +333,8 @@ var cameraShake = 0;
 					gameover.setVolume(5);
 					gameover.play();
 				});
-				while(scene.children.length > 0){
-                                        scene.remove(scene.children[0]);
-                                }
+				//while(scene.children.length > 0){ scene.remove(scene.children[0]); }
+				scene.remove.apply(scene, scene.children);
 			}
 			const aIndex = asteroids.indexOf(a);
 			asteroids.splice(aIndex, 1);

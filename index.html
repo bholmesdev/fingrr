@@ -6,182 +6,6 @@
   <title>FINGRR</title>
   <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
   <link href="styles/index.css" rel="stylesheet">
-  <style>
-    canvas {
-      width: 100%;
-      height: 100%
-    }
-
-    #webcam {
-      position: relative;
-    }
-
-    #webcam canvas {
-      position: absolute;
-      z-index: 903;
-      top: 20px;
-      right: 20px;
-      height: 150px;
-      width: 200px;
-      background-color: #000;
-      border: 1px solid #808080;
-    }
-
-    #webcam video {
-      position: absolute;
-      visibility: hidden;
-      height: 450px;
-      width: 600px;
-    }
-
-    #hud {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    #hud .top {
-      position: absolute;
-      top: 0px;
-      width: 100%;
-    }
-
-    #hud .bottom {
-      position: absolute;
-      bottom: 0px;
-      width: 100%;
-      z-index: 904;
-    }
-
-    #tracking-warnings * {
-      padding: 8px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 16pt;
-      /* background-color: rgb(192, 192, 0, 0.75); */
-      /* box-shadow: 0px -3px 5px 0px rgba(0, 0, 0, 0.25); */
-      display: none;
-    }
-
-    #tracking-warnings .thumb {
-      background-color: rgb(192, 160, 0, 0.75);
-      color: #800000;
-    }
-
-    #tracking-warnings .finger {
-      background-color: rgb(160, 192, 0, 0.75);
-      color: #006000;
-    }
-
-    #topbar {
-      display: flex;
-      padding: 8px;
-      font-weight: bold;
-      font-size: 16pt;
-      background-color: rgb(128, 128, 128, 0.75);
-      box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, 0.25);
-    }
-
-    #topbar * {
-      flex: 1 0 0;
-    }
-
-    #topbar .left {
-      text-align: left;
-    }
-
-    #topbar .middle {
-      text-align: center;
-    }
-
-    #topbar .right {
-      text-align: right;
-    }
-
-    .lives {
-      stroke: #404040;
-      stroke-width: 3px;
-      fill: #808080;
-      height: 15pt;
-    }
-
-    .lives.filled {
-      fill: #f00;
-    }
-
-    .pause-screen {
-      z-index: 901;
-    }
-
-    .calibration-screen {
-      z-index: 902;
-    }
-
-    .game-over-screen {
-      z-index: 905;
-    }
-
-    .title-screen {
-      z-index: 906;
-    }
-
-    .rules-screen {
-      z-index: 907;
-    }
-
-    .overlay {
-      position: absolute;
-      top: 0px;
-      left: 0px;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background-color: #000;
-      opacity: 0;
-      visibility: hidden;
-      transition: visibility 0s, opacity 0.5s ease;
-    }
-
-    .overlay.active {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    #hud.has-overlay #topbar {
-      display: none;
-    }
-
-    #hud a:link, #hud a:visited {
-      color: #fff;
-      transition: color 0.2s ease;
-    }
-
-    #hud a:hover, #hud a:active {
-      color: #fff001;
-    }
-
-    #pause-btn-container {
-      position: relative;
-    }
-
-    #pause-btn {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 16px;
-      color: #c0c0c0;
-      transition: color 0.5s ease;
-      text-decoration: none;
-    }
-
-    #pause-btn:hover, #pause-btn:active {
-      color: #fff;
-    }
-  </style>
-  <script src="https://threejs.org/build/three.min.js"></script>
 </head>
 
 <body>
@@ -221,11 +45,11 @@
     </div>
     <div class="overlay pause-screen">
       <h1>Paused</h1>
-      <p>You can <a href="javascript:void 0" id="resume-link">resume the game</a>, <a href="javascript:void 0" id="recalibrate-link">recalibrate your controller</a>, or <a href="/">restart the game</a>.</p>
+      <p>You can <a href="javascript:void 0" id="resume-link">resume the game</a>, <a href="javascript:void 0" id="recalibrate-link">recalibrate your controller</a>, or <a href=".">restart the game</a>.</p>
     </div>
     <div class="overlay game-over-screen">
       <h1>Game Over</h1>
-      <p>Your score was <span id="game-over-score">0</span>. Want to <a href="/">play again</a>?</p>
+      <p>Your score was <span id="game-over-score">0</span>. Want to <a href=".">play again</a>?</p>
     </div>
     <div class="active overlay title-screen">
       <img id="logo" src="res/FINGRR.svg" />
@@ -252,6 +76,7 @@
       </div>
     </div>
   </div>
+  <script src="js/three.js"></script>
   <script src="js/hud.js"></script>
   <script src="js/intro.js"></script>
   <script src="js/tracking.js"></script>

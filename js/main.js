@@ -42,12 +42,33 @@ scene.add(camera);
 var listener = new THREE.AudioListener();
 camera.add(listener);
 
+// all audio buffers as promises
+var audioBuffers = {
+	background: new Promise(function (resolve) {
+		new THREE.AudioLoader().load('sounds/background.mp3', resolve);
+	}),
+	pew: new Promise(function (resolve) {
+		new THREE.AudioLoader().load('sounds/pew.wav', resolve);
+	}),
+	explosion: new Promise(function (resolve) {
+		new THREE.AudioLoader().load('sounds/explosion.wav', resolve);
+	}),
+	crash: new Promise(function (resolve) {
+		new THREE.AudioLoader().load('sounds/crash.wav', resolve);
+	}),
+	lifeLost: new Promise(function (resolve) {
+		new THREE.AudioLoader().load('sounds/lifelost.wav', resolve);
+	}),
+	gameOver: new Promise(function (resolve) {
+		new THREE.AudioLoader().load('sounds/gameover.wav', resolve);
+	})
+};
+
 // create a global audio source
 var sound = new THREE.Audio(listener); 
 
 // load a sound and set it as the Audio object's buffer
-var audioLoader = new THREE.AudioLoader();
-audioLoader.load( 'sounds/background.mp3', function(buffer) {
+audioBuffers.background.then(function(buffer) {
 	sound.setBuffer(buffer);
 	sound.setLoop(true);
 	sound.setVolume(0.5);
@@ -168,8 +189,7 @@ function onMouseDown() {
   	plasmaBall.quaternion.copy(weapon.quaternion); // apply camera's quaternion
   	scene.add(plasmaBall);
 	var pew = new THREE.Audio(listener); 
-	var pewAudioLoader = new THREE.AudioLoader();
-	pewAudioLoader.load( 'sounds/pew.wav', function(buffer) {
+	audioBuffers.pew.then(function(buffer) {
 		pew.setBuffer(buffer);
 		pew.setLoop(false);
 		pew.setVolume(0.5);
@@ -272,8 +292,7 @@ var cameraShake = 0;
 		if (isCollision(b)) {
 			console.log("REMOVED BULLET AND ASTEROID");
 			var explosion = new THREE.Audio(listener);
-			var explosionAudioLoader = new THREE.AudioLoader();
-			explosionAudioLoader.load( 'sounds/explosion.wav', function(buffer) {
+			audioBuffers.explosion.then(function(buffer) {
 				explosion.setBuffer(buffer);
 				explosion.setLoop(false);
 				explosion.setVolume(0.5);
@@ -292,8 +311,7 @@ var cameraShake = 0;
 		var asteroidBox = new THREE.Box3().setFromObject(a);
 		if (asteroidBox.containsPoint(new THREE.Vector3(0, 0, 0))) {
 			var crash = new THREE.Audio(listener);
-			var crashAudioLoader = new THREE.AudioLoader();
-			crashAudioLoader.load( 'sounds/crash.wav', function(buffer) {
+			audioBuffers.crash.then(function(buffer) {
 				crash.setBuffer(buffer);
 				crash.setLoop(false);
 				crash.setVolume(0.5);
@@ -304,8 +322,7 @@ var cameraShake = 0;
 			if (lives > 0) {
 				console.log("You lost a life :(");
 				var lifelost = new THREE.Audio(listener);
-				var llAudioLoader = new THREE.AudioLoader();
-				llAudioLoader.load( 'sounds/lifelost.wav', function(buffer) {
+				audioBuffers.lifeLost.then(function(buffer) {
 					lifelost.setBuffer(buffer);
 					lifelost.setLoop(false);
 					lifelost.setVolume(1);
@@ -316,8 +333,7 @@ var cameraShake = 0;
 				clearInterval(asteroidInterval);
 				clearInterval(levelupInterval);
 				var gameover = new THREE.Audio(listener);
-				var goAudioLoader = new THREE.AudioLoader();
-				goAudioLoader.load( 'sounds/gameover.wav', function(buffer) {
+				audioBuffers.gameOver.then(function(buffer) {
 					gameover.setBuffer(buffer);
 					gameover.setLoop(false);
 					gameover.setVolume(5);

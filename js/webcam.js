@@ -1,5 +1,7 @@
 const VELOCITY_DATAPOINT_COUNT = 3;
 const MAX_UNTRACKED_TICKS = 5;
+const HUD_DISPLAY_WARNING_AFTER = 500;
+const HUD_HIDE_WARNING_AFTER = 250;
 
 const Calibration = {
     FIRE_MIN_THUMB_Y_VELOCITY: 12,
@@ -15,6 +17,13 @@ const Calibration = {
 const TriggerState = {
     RELEASE: 0,
     FIRE: 1
+};
+
+const HUDState = {
+    NOT_VISIBLE: 0,
+    WAITING_FOR_VISIBLE: 1,
+    VISIBLE: 2,
+    WAITING_FOR_NOT_VISIBLE: 3
 };
 
 const TRIGGER_DISTANCE_THRESHOLDS = {
@@ -42,6 +51,14 @@ const state = {
         release: {
             maxThumbVelocity: Calibration.RELEASE_MAX_THUMB_Y_VELOCITY,
             minFingerVelocity: Calibration.RELEASE_MIN_FINGER_Y_VELOCITY
+        }
+    },
+    hud: {
+        thumb: {
+            state: HUDState.NOT_VISIBLE
+        },
+        finger: {
+            state: HUDState.NOT_VISIBLE
         }
     }
 };
@@ -250,23 +267,17 @@ state.emitter.on('data', function (trackingData) {
         const rect = trackingData.thumb;
         const x = canvas.width - rect.x - rect.width;
         const y = rect.y;
-        context.strokeStyle = rect.color === 'thumb' ? '#ff0000' : '#00ff00';
+        context.strokeStyle = '#ff0000';
+        context.lineWidth = 3;
         context.strokeRect(x, y, rect.width, rect.height);
-        context.font = '11px Helvetica';
-        context.fillStyle = "#fff";
-        context.fillText('x: ' + x + 'px, y: ' + y + 'px', x + rect.width + 5, rect.y + 11);
-        context.fillText('w: ' + rect.width + 'px, h: ' + rect.height + 'px', x + rect.width + 5, rect.y + 22);
     }
     if (trackingData.finger) {
         const rect = trackingData.finger;
         const x = canvas.width - rect.x - rect.width;
         const y = rect.y;
-        context.strokeStyle = rect.color === 'thumb' ? '#ff0000' : '#00ff00';
+        context.strokeStyle = '#00ff00';
+        context.lineWidth = 3;
         context.strokeRect(x, y, rect.width, rect.height);
-        context.font = '11px Helvetica';
-        context.fillStyle = "#fff";
-        context.fillText('x: ' + x + 'px, y: ' + y + 'px', x + rect.width + 5, rect.y + 11);
-        context.fillText('w: ' + rect.width + 'px, h: ' + rect.height + 'px', x + rect.width + 5, rect.y + 22);
 
         if (state.calibrated) {
             const center = getRectCenter(trackingData.finger);
@@ -295,6 +306,66 @@ state.emitter.on('data', function (trackingData) {
             && (thumb.velocity.y <= state.trigger.release.maxThumbVelocity
                 || finger.velocity.y >= state.trigger.release.minFingerVelocity)) {
             state.trigger.state = TriggerState.RELEASE;
+        }
+    }
+
+    if (!thumb) {
+        switch (state.hud.thumb.state) {
+            case HUDState.WAITING_FOR_NOT_VISIBLE:
+                clearTimeout(state.hud.thumb.timer);
+                state.hud.thumb.state = HUDState.VISIBLE;
+                break;
+            case HUDState.NOT_VISIBLE:
+                setTimeout(function () {
+                    document.querySelector('#tracking-warnings .thumb').style.display = 'block';
+                    state.hud.thumb.state = HUDState.VISIBLE;
+                }, HUD_DISPLAY_WARNING_AFTER);
+                state.hud.thumb.state = HUDState.WAITING_FOR_VISIBLE;
+                break;
+        }
+    } else {
+        switch (state.hud.thumb.state) {
+            case HUDState.WAITING_FOR_VISIBLE:
+                clearTimeout(state.hud.thumb.timer);
+                state.hud.thumb.state = HUDState.NOT_VISIBLE;
+                break;
+            case HUDState.VISIBLE:
+                state.hud.thumb.timer = setTimeout(function () {
+                    document.querySelector('#tracking-warnings .thumb').style.display = 'none';
+                    state.hud.thumb.state = HUDState.NOT_VISIBLE;
+                }, HUD_HIDE_WARNING_AFTER);
+                state.hud.thumb.state = HUDState.WAITING_FOR_NOT_VISIBLE;
+                break;
+        }
+    }
+
+    if (!finger) {
+        switch (state.hud.finger.state) {
+            case HUDState.WAITING_FOR_NOT_VISIBLE:
+                clearTimeout(state.hud.finger.timer);
+                state.hud.finger.state = HUDState.VISIBLE;
+                break;
+            case HUDState.NOT_VISIBLE:
+                state.hud.finger.timer = setTimeout(function () {
+                    document.querySelector('#tracking-warnings .finger').style.display = 'block';
+                    state.hud.finger.state = HUDState.VISIBLE;
+                }, HUD_DISPLAY_WARNING_AFTER);
+                state.hud.finger.state = HUDState.WAITING_FOR_VISIBLE;
+                break;
+        }
+    } else {
+        switch (state.hud.finger.state) {
+            case HUDState.WAITING_FOR_VISIBLE:
+                clearTimeout(state.hud.finger.timer);
+                state.hud.finger.state = HUDState.NOT_VISIBLE;
+                break;
+            case HUDState.VISIBLE:
+                setTimeout(function () {
+                    document.querySelector('#tracking-warnings .finger').style.display = 'none';
+                    state.hud.finger.state = HUDState.NOT_VISIBLE;
+                }, HUD_HIDE_WARNING_AFTER);
+                state.hud.finger.state = HUDState.WAITING_FOR_NOT_VISIBLE;
+                break;
         }
     }
 });

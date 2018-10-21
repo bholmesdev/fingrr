@@ -20,6 +20,7 @@ document.addEventListener('click', (event) => {
 const initializeRules = () => {
   let dialogID = 0
   const text = document.getElementById('rules-text')
+  document.getElementsByClassName("finger-img")[0].classList.add("animated")
   const dialogInterval = setInterval(() => {
     text.innerHTML = (dialogID < rulesDialogs.length - 1) ?
       rulesDialogs[++dialogID] :

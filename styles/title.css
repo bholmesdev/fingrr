@@ -3,7 +3,7 @@
   --cyan: #00ffff;
 }
 
-button.title {
+button.retro {
   position: relative;
   font-size: 1em;
   border: 0.1em solid white;
@@ -15,7 +15,7 @@ button.title {
   animation: fade-in 0.5s ease-in 1s forwards;
 }
 
-button.title::before {
+button.retro::before {
   content: "";
   position: absolute;
   top: -1px;
@@ -28,11 +28,11 @@ button.title::before {
   animation: reverse-wipe 0.2s ease-out forwards;
 }
 
-button.title:hover {
+button.retro:hover {
   transform: scale(1.1);
 }
 
-button.title:hover::before {
+button.retro:hover::before {
   animation: wipe 0.2s ease-out forwards;
 }
 

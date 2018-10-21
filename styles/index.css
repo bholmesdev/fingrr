@@ -1,6 +1,7 @@
 @import "./title.css";
 @import "./keyframes.css";
-@import "./gun-calibration.css";
+@import "./rules.css";
+@import "./calibration.css";
 * {
   font-family: 'Audiowide', cursive;
 }
@@ -55,4 +56,13 @@ button {
   background-repeat: repeat;
   animation: up 2s linear infinite;
   z-index: -1;
+}
+
+.centered-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

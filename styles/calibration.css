@@ -1,0 +1,27 @@
+#finger-img.point-top-left {
+  transform: scaleX(-1) rotate(-30deg)
+}
+
+#finger-img.point-bottom-right {
+  transform: scaleX(1) rotate(30deg)
+}
+
+#dot {
+  width: 5em;
+  height: 5em;
+  position: absolute;
+  background: #ccc;
+  opacity: 0.8;
+  border-radius: 5em;
+  animation: pulse 2s infinite;
+}
+
+.top-left {
+  top: 1em;
+  left: 1em;
+}
+
+.bottom-right {
+  bottom: 1em;
+  right: 1em;
+}

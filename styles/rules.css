@@ -5,18 +5,18 @@
   overflow: hidden;
 }
 
-#finger-img {
+.finger-img {
   height: 22em;
   width: 25em;
   position: relative;
   transition: all .5s ease-in-out;
 }
 
-#finger-img.animated {
+.finger-img.animated {
   animation: run-and-gun 2.5s ease-out forwards;
 }
 
-#finger-img img {
+.finger-img img {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -26,7 +26,7 @@
   width: 100%;
 }
 
-#finger-img #thumb-down {
+.finger-img .thumb-down {
   top: 3.3em;
 }
 

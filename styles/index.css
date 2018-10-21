@@ -37,7 +37,9 @@ button {
   cursor: pointer;
 }
 
-#container {
+.title-screen,
+.rules-screen,
+.calibration-screen {
   width: 100%;
   height: 100%;
   position: relative;
@@ -47,10 +49,7 @@ button {
   align-items: center;
 }
 
-#container::before,
-#hud .game-over-screen::before,
-#hud .pause-screen::before,
-#hud .calibration-screen::before {
+.overlay::before {
   content: "";
   width: 100%;
   height: calc(100% + 5em);

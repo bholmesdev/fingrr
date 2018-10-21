@@ -1,23 +1,26 @@
 (function () {
-    const hud = document.getElementById('hud');
-
     document.getElementById('pause-btn').addEventListener('click', function () {
-        hud.classList.add('paused');
+        switchToOverlay('pause-screen');
         isPlay = false;
     });
     document.getElementById('resume-link').addEventListener('click', function () {
-        hud.classList.remove('paused');
+        switchToOverlay();
         isPlay = true;
     });
-    document.getElementById('recalibrate-link').addEventListener('click', startCalibrationUI);
+    document.getElementById('recalibrate-link').addEventListener('click', function () {
+        switchToOverlay('calibration-screen');
+        calibrate().then(function () {
+            switchToOverlay('pause-screen');
+        });
+    });
 
     window.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
-            if (!hud.classList.length) {
-                hud.classList.add('paused');
+            if (!activeOverlay) {
+                switchToOverlay('pause-screen');
                 isPlay = false;
-            } else if (hud.classList.contains('paused')) {
-                hud.classList.remove('paused');
+            } else if (activeOverlay === 'pause-screen') {
+                switchToOverlay();
                 isPlay = true;
             }
         }

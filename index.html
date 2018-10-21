@@ -121,14 +121,15 @@
       z-index: 905;
     }
 
-    .intro-screens {
+    .title-screen {
       z-index: 906;
     }
 
-    #hud .game-over-screen,
-    #hud .pause-screen,
-    #hud .calibration-screen,
-    #hud .intro-screens {
+    .rules-screen {
+      z-index: 907;
+    }
+
+    .overlay {
       position: absolute;
       top: 0px;
       left: 0px;
@@ -144,18 +145,12 @@
       transition: visibility 0s, opacity 0.5s ease;
     }
 
-    #hud.game-over .game-over-screen,
-    #hud.paused .pause-screen,
-    #hud.calibration .calibration-screen,
-    #hud.intro .intro-screens {
+    .overlay.active {
       visibility: visible;
       opacity: 1;
     }
 
-    #hud.game-over #topbar,
-    #hud.paused #topbar,
-    #hud.calibration #topbar,
-    #hud.intro #topbar {
+    #hud.has-overlay #topbar {
       display: none;
     }
 
@@ -190,7 +185,7 @@
 </head>
 
 <body>
-  <div id="hud" class="intro">
+  <div id="hud" class="has-overlay">
     <div class="top">
       <div id="topbar">
         <div class="left">Level <span id="level">1</span></div>
@@ -224,21 +219,40 @@
         <div class="finger">Can't see your middle finger!</div>
       </div>
     </div>
-    <div class="pause-screen">
+    <div class="overlay pause-screen">
       <h1>Paused</h1>
       <p>You can <a href="javascript:void 0" id="resume-link">resume the game</a>, <a href="javascript:void 0" id="recalibrate-link">recalibrate your controller</a>, or <a href="/">restart the game</a>.</p>
     </div>
-    <div class="calibration-screen" id="calibration">
-    </div>
-    <div class="game-over-screen">
+    <div class="overlay game-over-screen">
       <h1>Game Over</h1>
       <p>Your score was <span id="game-over-score">0</span>. Want to <a href="/">play again</a>?</p>
     </div>
-    <div class="intro-screens">
-      <div id="container">
+    <div class="active overlay title-screen">
+      <img id="logo" src="res/FINGRR.svg" />
+      <button class="retro title">Start your adventure</button>
+    </div>
+    <div class="overlay rules-screen">
+      <p id="rules-text">Alright cadet, let's get you geared up.</p>
+      <button class="retro rules">Okay, I'm ready!</button>
+      <div id="container--gun">
+        <div id="rules-finger-img" class="finger-img animated">
+          <img id="rules-thumb-up" class="thumb-up fade-in" src="./res/finger_thumb_up.svg" />
+          <img id="rules-thumb-down" class="thumb-down fade-out" src="./res/finger_thumb_down.svg" />
+        </div>
+      </div>
+    </div>
+    <div class="overlay calibration-screen">
+      <div class="centered-container">
+        <p>Aim as indicated and shoot!</p>
+        <div id="dot" class="top-left"></div>
+        <div id="calibration-finger-img" class="finger-img point-top-left">
+          <img id="calibration-thumb-up" class="thumb-up fade-in" src="./res/finger_thumb_up.svg" />
+          <img id="calibration-thumb-down" class="thumb-down fade-out" src="./res/finger_thumb_down.svg" />
+        </div>
       </div>
     </div>
   </div>
+  <script src="js/hud.js"></script>
   <script src="js/intro.js"></script>
   <script src="js/tracking.js"></script>
   <script src="js/main.js"></script>

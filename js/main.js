@@ -378,7 +378,6 @@ var isPlay = false;
 
 var livesElems = document.querySelectorAll('#lives .lives');
 var scoreElem = document.querySelector('#score');
-var hudElem = document.querySelector('#hud');
 var gameOverScoreElem = document.querySelector('#game-over-score');
 
 (function render() {
@@ -449,7 +448,7 @@ var gameOverScoreElem = document.querySelector('#game-over-score');
 					gameover.play();
 				});
 				gameOverScoreElem.innerText = score.toString(10);
-				hudElem.classList.add('game-over');
+				switchToOverlay('game-over-screen');
 				//while(scene.children.length > 0){ scene.remove(scene.children[0]); }
 				scene.remove.apply(scene, scene.children);
 			}
@@ -470,7 +469,6 @@ var gameOverScoreElem = document.querySelector('#game-over-score');
 		).add(CAMERA_POSITION));
 		cameraShake -= delta;
 	}
-  	//weapon.rotateX(0.005);
-  	//weapon.rotateY(0.005);
+
   	renderer.render(scene, camera);
 })()

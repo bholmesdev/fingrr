@@ -1,8 +1,8 @@
-#finger-img.point-top-left {
+.finger-img.point-top-left {
   transform: scaleX(-1) rotate(-35deg)
 }
 
-#finger-img.point-bottom-right {
+.finger-img.point-bottom-right {
   transform: scaleX(1) rotate(25deg)
 }
 

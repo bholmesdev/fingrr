@@ -237,6 +237,8 @@ function calibrate() {
         state.fov.rightEdge = center.x;
         state.fov.bottomEdge = center.y;
         state.calibrated = true;
+
+        triggerPulled();
     });
 }
 
@@ -365,21 +367,15 @@ const tracker = new tracking.ColorTracker(['thumb', 'finger']);
 tracker.setMinDimension(10);
 tracker.setMinGroupSize(15);
 
-function startCalibrationUI() {
-    document.querySelector('#hud').classList.add('calibration');
-    return calibrate().then(function () {
-        document.querySelector('#hud').classList.remove('calibration');
-    });
-}
-
 function startGame() {
-    document.querySelector('#hud').classList.remove('intro');
     initialize({
         videoElement: video,
         tracker: tracker
     }).then(function () {
-        return startCalibrationUI();
+        switchToOverlay('calibration-screen');
+        return calibrate();
     }).then(function () {
+        switchToOverlay();
         isPlay = true;
     });
 }

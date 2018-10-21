@@ -206,11 +206,9 @@ function calibrate(helpTextElement) {
     state.trigger.release.minFingerVelocity = Calibration.RELEASE_MIN_FINGER_Y_VELOCITY;
 
     while (helpTextElement.firstChild) helpTextElement.removeChild(helpTextElement.firstChild);
-    const strong = document.createElement('strong');
-    strong.innerText = 'Step 1 of 2: ';
-    const text = document.createTextNode('Point your finger gun at the top-left corner of the screen and shoot.');
-    helpTextElement.appendChild(strong);
-    helpTextElement.appendChild(text);
+    helpTextElement.appendChild(document.createTextNode('Step 1 of 2:'));
+    helpTextElement.appendChild(document.createElement('br'));
+    helpTextElement.appendChild(document.createTextNode('Point your finger gun at the top-left corner of the screen and shoot.'));
 
     let thumbVelocitySum = 0;
 
@@ -230,11 +228,9 @@ function calibrate(helpTextElement) {
         console.log('set top left', state.fov);
 
         while (helpTextElement.firstChild) helpTextElement.removeChild(helpTextElement.firstChild);
-        const strong = document.createElement('strong');
-        strong.innerText = 'Step 2 of 2: ';
-        const text = document.createTextNode('Point your finger gun at the bottom-right corner of the screen and shoot.');
-        helpTextElement.appendChild(strong);
-        helpTextElement.appendChild(text);
+        helpTextElement.appendChild(document.createTextNode('Step 2 of 2:'));
+        helpTextElement.appendChild(document.createElement('br'));
+        helpTextElement.appendChild(document.createTextNode('Point your finger gun at the bottom-right corner of the screen and shoot.'));
 
         return new Promise(function (resolve) { state.emitter.once('fire', resolve); });
     }).then(function (bottomRightTrackingData) {
@@ -393,11 +389,14 @@ function startCalibrationUI() {
     });
 }
 
-initialize({
-    videoElement: video,
-    tracker: tracker
-}).then(function () {
-    return startCalibrationUI(true);
-}).then(function () {
-    isPlay = true;
-});
+function startGame() {
+    document.querySelector('#hud').classList.remove('intro');
+    initialize({
+        videoElement: video,
+        tracker: tracker
+    }).then(function () {
+        return startCalibrationUI(true);
+    }).then(function () {
+        isPlay = true;
+    });
+}

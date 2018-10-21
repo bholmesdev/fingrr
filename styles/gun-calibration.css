@@ -1,0 +1,37 @@
+#container--gun {
+  position: relative;
+  height: 50%;
+  width: 100%;
+  overflow: hidden;
+}
+
+#finger-img {
+  height: 100%;
+  width: 25em;
+  position: relative;
+  display: flex;
+}
+
+#finger-img img {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: auto;
+  width: 100%;
+  transition: opacity 0.3s;
+  animation: run-and-gun 2.5s ease-out forwards;
+}
+
+#finger-img #thumb-down {
+  top: 3.3em;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
+}

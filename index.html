@@ -4,14 +4,9 @@
 <head>
   <meta charset=utf-8>
   <title>FINGRR</title>
+  <link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet">
+  <link href="styles/index.css" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      color: #fff;
-      font-family: Lato, sans-serif;
-    }
-
     canvas {
       width: 100%;
       height: 100%
@@ -68,16 +63,18 @@
       text-align: center;
       font-weight: bold;
       font-size: 16pt;
-      background-color: rgb(192, 192, 0, 0.75);
-      box-shadow: 0px -3px 5px 0px rgba(0, 0, 0, 0.25);
+      /* background-color: rgb(192, 192, 0, 0.75); */
+      /* box-shadow: 0px -3px 5px 0px rgba(0, 0, 0, 0.25); */
       display: none;
     }
 
     #tracking-warnings .thumb {
+      background-color: rgb(192, 160, 0, 0.75);
       color: #800000;
     }
 
     #tracking-warnings .finger {
+      background-color: rgb(160, 192, 0, 0.75);
       color: #006000;
     }
 
@@ -129,9 +126,14 @@
       z-index: 905;
     }
 
+    .intro-screens {
+      z-index: 906;
+    }
+
     #hud .game-over-screen,
     #hud .pause-screen,
-    #hud .calibration-screen {
+    #hud .calibration-screen,
+    #hud .intro-screens {
       position: absolute;
       top: 0px;
       left: 0px;
@@ -149,27 +151,19 @@
 
     #hud.game-over .game-over-screen,
     #hud.paused .pause-screen,
-    #hud.calibration .calibration-screen {
+    #hud.calibration .calibration-screen,
+    #hud.intro .intro-screens {
       visibility: visible;
       opacity: 1;
     }
 
-    #hud .game-over-screen p,
-    #hud .game-over-screen p a:link,
-    #hud .game-over-screen p a:visited,
-    #hud .pause-screen p,
-    #hud .pause-screen p a:link,
-    #hud .pause-screen p a:visited {
-      color: #c0c0c0;
+    #hud a:link, #hud a:visited {
+      color: #fff;
+      transition: color 0.2s ease;
     }
 
-    #hud .game-over-screen p,
-    #hud .game-over-screen p a:link,
-    #hud .game-over-screen p a:visited,
-    #hud .pause-screen p,
-    #hud .pause-screen p a:link,
-    #hud .pause-screen p a:visited {
-      color: #fff;
+    #hud a:hover, #hud a:active {
+      color: #fff001;
     }
 
     #pause-btn-container {
@@ -194,7 +188,7 @@
 </head>
 
 <body>
-  <div id="hud">
+  <div id="hud" class="intro">
     <div class="top">
       <div id="topbar">
         <div class="left">Level <span id="level">1</span></div>
@@ -215,7 +209,7 @@
         <div class="right">Score: <span id="score">0</span></div>
       </div>
       <div id="pause-btn-container">
-        <a href="javascript:void 0" id="pause-btn">Pause</a>
+        <button id="pause-btn">Pause</a>
       </div>
       <div id="webcam">
         <video width="600" height="450" preload autoplay loop muted></video>
@@ -225,7 +219,7 @@
     <div class="bottom">
       <div id="tracking-warnings">
         <div class="thumb">Can't see your thumb!</div>
-        <div class="finger">Can't see your index finger!</div>
+        <div class="finger">Can't see your middle finger!</div>
       </div>
     </div>
     <div class="pause-screen">
@@ -240,12 +234,17 @@
       <h1>Game Over</h1>
       <p>Your score was <span id="game-over-score">0</span>. Want to <a href="/">play again</a>?</p>
     </div>
+    <div class="intro-screens">
+      <div id="container">
+      </div>
+    </div>
   </div>
   <script src="js/tracking.js"></script>
   <script src="js/main.js"></script>
   <script src="js/eventemitter.js"></script>
   <script src="js/webcam.js"></script>
   <script src="js/links.js"></script>
+  <script src="js/intro.js"></script>
 </body>
 
 </html>

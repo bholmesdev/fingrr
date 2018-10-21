@@ -5,7 +5,7 @@ const rulesDialogs = [
 ]
 
 let rulesInterval = null
-const firstTriggerPulled = false
+let firstTriggerPulled = false
 
 const screens = {
   title: `
@@ -13,7 +13,7 @@ const screens = {
     <button class="retro title">Start your adventure</button>
   `,
   rules: `
-  <p id="calibration-text">${rulesDialogs[0]}</p>
+  <p id="rules-text">${rulesDialogs[0]}</p>
   <button class="retro rules">Okay, I'm ready!</button>
   <div id="container--gun">
     <div id="finger-img" class="animated">
@@ -24,6 +24,7 @@ const screens = {
   `,
   calibration: `
   <div class="centered-container">
+    <p>Aim as indicated and shoot!</p>
     <div id="dot" class="top-left"></div>
     <div id="finger-img" class="point-top-left">
       <img id="thumb-up" class="fade-in" src="./res/finger_thumb_up.svg" />
@@ -48,7 +49,7 @@ document.addEventListener('click', (event) => {
 
 const initializeRules = () => {
   let dialogID = 0
-  const text = document.getElementById('calibration-text')
+  const text = document.getElementById('rules-text')
   const dialogInterval = setInterval(() => {
     text.innerHTML = (dialogID < rulesDialogs.length - 1) ?
       rulesDialogs[++dialogID] :
@@ -69,7 +70,7 @@ const initializeRules = () => {
       }, 1500)
       clearInterval(dialogInterval)
     }
-  }, 6000)
+  }, 5000)
 }
 
 const initializeCalibration = () => {
@@ -91,6 +92,7 @@ const initializeCalibration = () => {
 
 const triggerPulled = () => {
   if (firstTriggerPulled) {
+    clearInterval(rulesInterval)
     document.getElementById('container').classList = ["fade-out"]
   } else {
     document.getElementById('finger-img').classList = ["point-bottom-right"]
@@ -100,5 +102,4 @@ const triggerPulled = () => {
 }
 
 //set initial screen
-container.innerHTML = screens['calibration']
-initializeCalibration()
+container.innerHTML = screens['title']

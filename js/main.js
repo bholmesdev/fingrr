@@ -5,22 +5,22 @@
 //const hFOV = 2 * Math.atan( Math.tan( vFOV / 2 ) * aspect );
 //const width = 2 * Math.tan( ( hFOV / 2 ) ) * radius;
 
-const visibleHeightAtZDepth = ( depth, camera ) => {
-  // compensate for cameras not positioned at z=0
-  const cameraOffset = camera.position.z;
-  if ( depth < cameraOffset ) depth -= cameraOffset;
-  else depth += cameraOffset;
+const visibleHeightAtZDepth = (depth, camera) => {
+	// compensate for cameras not positioned at z=0
+	const cameraOffset = camera.position.z;
+	if (depth < cameraOffset) depth -= cameraOffset;
+	else depth += cameraOffset;
 
-  // vertical fov in radians
-  const vFOV = camera.fov * Math.PI / 180;
+	// vertical fov in radians
+	const vFOV = camera.fov * Math.PI / 180;
 
-  // Math.abs to ensure the result is always positive
-  return 2 * Math.tan( vFOV / 2 ) * Math.abs( depth );
+	// Math.abs to ensure the result is always positive
+	return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
 };
 
-const visibleWidthAtZDepth = ( depth, camera ) => {
-  const height = visibleHeightAtZDepth( depth, camera );
-  return height * camera.aspect;
+const visibleWidthAtZDepth = (depth, camera) => {
+	const height = visibleHeightAtZDepth(depth, camera);
+	return height * camera.aspect;
 };
 
 //setup scene
@@ -44,7 +44,7 @@ scene.add(background);
 
 //setup renderer
 var renderer = new THREE.WebGLRenderer({
-  antialias: true
+	antialias: true
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -79,10 +79,10 @@ const vHeight = visibleHeightAtZDepth(sphereDepth, camera);
 const vWidth = visibleWidthAtZDepth(sphereDepth, camera);
 
 function generateAsteroid() {
-	const vAxis = -(vWidth/2) + vWidth * Math.random();
-	const hAxis = -(vHeight/2) + vHeight * Math.random();
+	const vAxis = -(vWidth / 2) + vWidth * Math.random();
+	const hAxis = -(vHeight / 2) + vHeight * Math.random();
 	const geometry = new THREE.SphereGeometry(15, 8, 6);
-	const lineGeometry = new THREE.SphereBufferGeometry(15,8,6);
+	const lineGeometry = new THREE.SphereBufferGeometry(15, 8, 6);
 	//lineGeometry.addAttribute('position', new THREE.Float32BufferAttribute([], 3));
 	let asteroid = new THREE.Group();
 	asteroid.add(new THREE.Mesh(lineGeometry, new THREE.MeshLambertMaterial({
@@ -108,27 +108,27 @@ var plasmaBalls = [];
 window.addEventListener("mousedown", onMouseDown);
 
 function onMouseDown() {
-  	let plasmaBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
-  		color: "aqua"
-  	}));
-  	plasmaBall.position.copy(emitter.getWorldPosition()); // start position - the tip of the weapon
-  	plasmaBall.quaternion.copy(weapon.quaternion); // apply camera's quaternion
-  	scene.add(plasmaBall);
-  	plasmaBalls.push(plasmaBall);
+	let plasmaBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
+		color: "aqua"
+	}));
+	plasmaBall.position.copy(emitter.getWorldPosition()); // start position - the tip of the weapon
+	plasmaBall.quaternion.copy(weapon.quaternion); // apply camera's quaternion
+	scene.add(plasmaBall);
+	plasmaBalls.push(plasmaBall);
 }
 
 function isCollision(ball) {
 	var collision = false;
 	//for (vertexIndex = 0; vertexIndex < object.geometry.vertices.length; vertexIndex++) {
 	//	var localVertex = object.geometry.vertices[vertexIndex].clone();
-    	//	var globalVertex = object.matrix.multiplyVector3(localVertex);
-    	//	var directionVector = globalVertex.sub( object.position );
+	//	var globalVertex = object.matrix.multiplyVector3(localVertex);
+	//	var directionVector = globalVertex.sub( object.position );
 
-    	//	var ray = new THREE.Raycaster( object.position, directionVector.clone().normalize());
-    	//	var collisionResults = ray.intersectObjects( collidableMeshList );
-    	//	if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
+	//	var ray = new THREE.Raycaster( object.position, directionVector.clone().normalize());
+	//	var collisionResults = ray.intersectObjects( collidableMeshList );
+	//	if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
 	//		scene.remove(collisionResults[0]);
-    	//	}
+	//	}
 	//}
 	if (ball.position.z >= sphereDepth) {
 		const bIndex = plasmaBalls.indexOf(ball);
@@ -160,24 +160,24 @@ var max_amplitudes = new THREE.Vector3(5, 5, 5);
 // Keep this lower than half your framerate to avoid temporal aliasing.
 var frequencies = new THREE.Vector3(20, 20, 20);
 
-function ShakePosition( unshakenPosition, trauma ) {
-   // Making amplitude proportional to the square or cube of the input trauma
-   // helps give a gentler ramp-out to the shake, and clearly distinguishes intensities.
-   var amplitude = max_amplitudes * trauma * trauma * trauma;
-   var phases = 10 * frequencies;
+function ShakePosition(unshakenPosition, trauma) {
+	// Making amplitude proportional to the square or cube of the input trauma
+	// helps give a gentler ramp-out to the shake, and clearly distinguishes intensities.
+	var amplitude = max_amplitudes * trauma * trauma * trauma;
+	var phases = 10 * frequencies;
 
-   var offset = new THREE.Vector3(0, 0, 0);
-   // Using trig functions gives a periodic shake, like the camera's mount
-   // has a little wobble in it like a stiff spring. Using different frequencies
-   // on each axis helps the shake look chaotic instead of repetitive.
-   offset.x = Math.cos(phases.x) * amplitude.x;
-   offset.y = Math.cos(phases.y) * amplitude.y;
-   offset.z = Math.cos(phases.z) * amplitude.z;
+	var offset = new THREE.Vector3(0, 0, 0);
+	// Using trig functions gives a periodic shake, like the camera's mount
+	// has a little wobble in it like a stiff spring. Using different frequencies
+	// on each axis helps the shake look chaotic instead of repetitive.
+	offset.x = Math.cos(phases.x) * amplitude.x;
+	offset.y = Math.cos(phases.y) * amplitude.y;
+	offset.z = Math.cos(phases.z) * amplitude.z;
 
-   // You can use your favourite continuous noise function instead of cos if you like,
-   // eg. Perlin noise with different frequencies / offsets per axis.
+	// You can use your favourite continuous noise function instead of cos if you like,
+	// eg. Perlin noise with different frequencies / offsets per axis.
 
-   return unshakenPosition + offset;
+	return unshakenPosition + offset;
 }
 
 //////////////settings/////////
@@ -190,39 +190,39 @@ var dirs = [];
 var parts = [];
 
 function ExplodeAnimation(x, y, z) {
- 	var geometry = new THREE.Geometry();
+	var geometry = new THREE.Geometry();
 
-	for (i = 0; i < totalObjects; i ++) {
-	var vertex = new THREE.Vector3();
-	vertex.x = x;
-    	vertex.y = y;
-    	vertex.z = z;
+	for (i = 0; i < totalObjects; i++) {
+		var vertex = new THREE.Vector3();
+		vertex.x = x;
+		vertex.y = y;
+		vertex.z = z;
 
-    	geometry.vertices.push( vertex );
-    	dirs.push({x:(Math.random() * movementSpeed)-(movementSpeed/2),y:(Math.random() * movementSpeed)-(movementSpeed/2),z:(Math.random() * movementSpeed)-(movementSpeed/2)});
-  	}
-  	var material = new THREE.PointsMaterial( { size: objectSize,  color: colors[Math.round(Math.random() * colors.length)] });
-  	var particles = new THREE.Points( geometry, material );
+		geometry.vertices.push(vertex);
+		dirs.push({ x: (Math.random() * movementSpeed) - (movementSpeed / 2), y: (Math.random() * movementSpeed) - (movementSpeed / 2), z: (Math.random() * movementSpeed) - (movementSpeed / 2) });
+	}
+	var material = new THREE.PointsMaterial({ size: objectSize, color: colors[Math.round(Math.random() * colors.length)] });
+	var particles = new THREE.Points(geometry, material);
 
-  	this.object = particles;
-  	this.status = true;
+	this.object = particles;
+	this.status = true;
 
-  	this.xDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-  	this.yDir = (Math.random() * movementSpeed)-(movementSpeed/2);
-  	this.zDir = (Math.random() * movementSpeed)-(movementSpeed/2);
+	this.xDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+	this.yDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
+	this.zDir = (Math.random() * movementSpeed) - (movementSpeed / 2);
 
-  	scene.add(this.object);
+	scene.add(this.object);
 
-  	this.update = function(){
+	this.update = function () {
 		var pCount = totalObjects;
-      		while(pCount--) {
-			var particle =  this.object.geometry.vertices[pCount]
-        		particle.y += dirs[pCount].y;
-        		particle.x += dirs[pCount].x;
-       			particle.z += dirs[pCount].z;
-      			}
-      		this.object.geometry.verticesNeedUpdate = true;
-  	}
+		while (pCount--) {
+			var particle = this.object.geometry.vertices[pCount]
+			particle.y += dirs[pCount].y;
+			particle.x += dirs[pCount].x;
+			particle.z += dirs[pCount].z;
+		}
+		this.object.geometry.verticesNeedUpdate = true;
+	}
 }
 
 var speed = 500;
@@ -231,20 +231,20 @@ var delta = 0;
 
 (function render() {
 	requestAnimationFrame(render);
-  	delta = clock.getDelta();
-  	plasmaBalls.forEach(b => {
+	delta = clock.getDelta();
+	plasmaBalls.forEach(b => {
 		if (isCollision(b)) {
 			console.log("REMOVED BULLET AND ASTEROID");
 			parts.push(new ExplodeAnimation(b.position.x, b.position.y, b.position.z));
 
 		}
-  		b.translateZ(speed * delta); // move along the local z-axis
-  	});
+		b.translateZ(speed * delta); // move along the local z-axis
+	});
 	var pCount = parts.length;
-        	while(pCount--) {
-        		parts[pCount].update();
-        	}
-  	asteroids.forEach(a => {
+	while (pCount--) {
+		parts[pCount].update();
+	}
+	asteroids.forEach(a => {
 		var asteroidBox = new THREE.Box3().setFromObject(a);
 		if (asteroidBox.containsPoint(new THREE.Vector3(0, 0, 0))) {
 			const aIndex = asteroids.indexOf(a);
@@ -254,9 +254,9 @@ var delta = 0;
 			//TODO: Iterate lives && GameOver here
 		}
 
-    		a.translateOnAxis(a.worldToLocal(new THREE.Vector3(0, 0, 0)), 0.005);
-  	});
-  	//weapon.rotateX(0.005);
-  	//weapon.rotateY(0.005);
-  	renderer.render(scene, camera);
+		a.translateOnAxis(a.worldToLocal(new THREE.Vector3(0, 0, 0)), 0.005);
+	});
+	//weapon.rotateX(0.005);
+	//weapon.rotateY(0.005);
+	renderer.render(scene, camera);
 })()

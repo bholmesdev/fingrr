@@ -164,6 +164,8 @@ function generateAsteroid() {
 	collidableMeshList.push(asteroid);
 }
 
+var level = 1;
+var levelElem = document.querySelector('#level');
 var intervalMilli = 3000;
 var asteroidInterval = setInterval(generateAsteroid, intervalMilli);
 var asteroidSpeed = 0.05;
@@ -182,6 +184,8 @@ function levelUp() {
 	asteroidColorIdx++;
 	background.material.color.setHex(sphereColors[sphereColorIdx % sphereColors.length]);
 	asteroidColor = asteroidColors[asteroidColorIdx % asteroidColors.length];
+	level++;
+	levelElem.innerText = level.toString(10);
 	console.log("LEVEL UP");
 
 }
@@ -288,12 +292,19 @@ function ExplodeAnimation(x, y, z) {
   	}
 }
 
+var score = 0;
 var speed = 500;
 var clock = new THREE.Clock();
 var delta = 0;
-var lives = 3000000;
+var lives = 3;
 var cameraShake = 0;
 var isPlay = false;
+
+var livesElems = document.querySelectorAll('#lives .lives');
+var scoreElem = document.querySelector('#score');
+var hudElem = document.querySelector('#hud');
+var gameOverScoreElem = document.querySelector('#game-over-score');
+
 (function render() {
 	requestAnimationFrame(render);
   	delta = clock.getDelta();
@@ -309,6 +320,8 @@ var isPlay = false;
 				explosion.play();
 			});
 
+			score += 100;
+			scoreElem.innerText = score.toString(10);
 			parts.push(new ExplodeAnimation(b.position.x, b.position.y, b.position.z));
 		}
   		b.translateZ(speed * delta); // move along the local z-axis
@@ -329,6 +342,14 @@ var isPlay = false;
 			});
 			cameraShake = DEFAULT_CAMERA_SHAKE;
 			lives--;
+			livesElems.forEach(function (elem, i) {
+				if (i < lives) {
+					elem.classList.add('filled');
+				} else {
+					elem.classList.remove('filled');
+				}
+			});
+
 			if (lives > 0) {
 				console.log("You lost a life :(");
 				var lifelost = new THREE.Audio(listener);
@@ -342,6 +363,7 @@ var isPlay = false;
 				console.log("GAME OVER");
 				clearInterval(asteroidInterval);
 				clearInterval(levelupInterval);
+				isPlay = false;
 				var gameover = new THREE.Audio(listener);
 				audioBuffers.gameOver.then(function(buffer) {
 					gameover.setBuffer(buffer);
@@ -349,6 +371,8 @@ var isPlay = false;
 					gameover.setVolume(5);
 					gameover.play();
 				});
+				gameOverScoreElem.innerText = score.toString(10);
+				hudElem.classList.add('game-over');
 				//while(scene.children.length > 0){ scene.remove(scene.children[0]); }
 				scene.remove.apply(scene, scene.children);
 			}

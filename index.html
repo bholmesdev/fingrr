@@ -23,7 +23,7 @@
 
     #webcam canvas {
       position: absolute;
-      z-index: 999;
+      z-index: 903;
       top: 20px;
       right: 20px;
       height: 150px;
@@ -60,6 +60,7 @@
       position: absolute;
       bottom: 0px;
       width: 100%;
+      z-index: 904;
     }
 
     #tracking-warnings * {
@@ -116,13 +117,26 @@
       fill: #f00;
     }
 
-    #hud .game-over-screen {
+    .pause-screen {
+      z-index: 901;
+    }
+
+    .calibration-screen {
+      z-index: 902;
+    }
+
+    .game-over-screen {
+      z-index: 905;
+    }
+
+    #hud .game-over-screen,
+    #hud .pause-screen,
+    #hud .calibration-screen {
       position: absolute;
       top: 0px;
       left: 0px;
       width: 100%;
       height: 100%;
-      z-index: 9999;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -133,19 +147,28 @@
       transition: visibility 0s, opacity 0.5s ease;
     }
 
-    #hud.game-over .game-over-screen {
+    #hud.game-over .game-over-screen,
+    #hud.paused .pause-screen,
+    #hud.calibration .calibration-screen {
       visibility: visible;
       opacity: 1;
     }
 
-    #hud.game-over .game-over-screen p,
-    #hud.game-over .game-over-screen p a:link,
-    #hud.game-over .game-over-screen p a:visited {
+    #hud .game-over-screen p,
+    #hud .game-over-screen p a:link,
+    #hud .game-over-screen p a:visited,
+    #hud .pause-screen p,
+    #hud .pause-screen p a:link,
+    #hud .pause-screen p a:visited {
       color: #c0c0c0;
     }
 
-    #hud.game-over .game-over-screen p a:hover,
-    #hud.game-over .game-over-screen p a:active {
+    #hud .game-over-screen p,
+    #hud .game-over-screen p a:link,
+    #hud .game-over-screen p a:visited,
+    #hud .pause-screen p,
+    #hud .pause-screen p a:link,
+    #hud .pause-screen p a:visited {
       color: #fff;
     }
   </style>
@@ -177,10 +200,6 @@
         <video width="600" height="450" preload autoplay loop muted></video>
         <canvas width="600" height="450"></canvas>
       </div>
-      <div id="calibration">
-        <h1>Calibration</h1>
-        <p id="calibration-help"></p>
-      </div>
     </div>
     <div class="bottom">
       <div id="tracking-warnings">
@@ -188,9 +207,17 @@
         <div class="finger">Can't see your index finger!</div>
       </div>
     </div>
+    <div class="pause-screen">
+      <h1>Paused</h1>
+      <p><a href="/">Click here to resume</a>, or <a href="javascript:void 0" id="recalibrate-link">click here to recalibrate</a>.</p>
+    </div>
+    <div class="calibration-screen">
+      <h1>Calibration</h1>
+      <p id="calibration-help"></p>
+    </div>
     <div class="game-over-screen">
       <h1>Game Over</h1>
-      <p>Your score was <span class="score">0</span>. Want to <a href="/">play again</a>?</p>
+      <p>Your score was <span id="game-over-score">0</span>. Want to <a href="/">play again</a>?</p>
     </div>
   </div>
   <script src="js/tracking.js"></script>

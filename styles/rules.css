@@ -6,10 +6,14 @@
 }
 
 #finger-img {
-  height: 100%;
+  height: 22em;
   width: 25em;
   position: relative;
-  display: flex;
+  transition: all .5s ease-in-out;
+}
+
+#finger-img.animated {
+  animation: run-and-gun 2.5s ease-out forwards;
 }
 
 #finger-img img {
@@ -20,8 +24,6 @@
   top: 0;
   height: auto;
   width: 100%;
-  transition: opacity 0.3s;
-  animation: run-and-gun 2.5s ease-out forwards;
 }
 
 #finger-img #thumb-down {
@@ -30,8 +32,10 @@
 
 .fade-in {
   opacity: 1;
+  transition: opacity 0.3s;
 }
 
 .fade-out {
   opacity: 0;
+  transition: opacity 0.3s;
 }

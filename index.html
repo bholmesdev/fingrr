@@ -40,11 +40,6 @@
       height: 100%;
     }
 
-    #calibration {
-      display: none;
-      text-align: center;
-    }
-
     #hud .top {
       position: absolute;
       top: 0px;
@@ -157,6 +152,13 @@
       opacity: 1;
     }
 
+    #hud.game-over #topbar,
+    #hud.paused #topbar,
+    #hud.calibration #topbar,
+    #hud.intro #topbar {
+      display: none;
+    }
+
     #hud a:link, #hud a:visited {
       color: #fff;
       transition: color 0.2s ease;
@@ -226,9 +228,7 @@
       <h1>Paused</h1>
       <p>You can <a href="javascript:void 0" id="resume-link">resume the game</a>, <a href="javascript:void 0" id="recalibrate-link">recalibrate your controller</a>, or <a href="/">restart the game</a>.</p>
     </div>
-    <div class="calibration-screen">
-      <h1>Calibration</h1>
-      <p id="calibration-help"></p>
+    <div class="calibration-screen" id="calibration">
     </div>
     <div class="game-over-screen">
       <h1>Game Over</h1>
@@ -239,12 +239,12 @@
       </div>
     </div>
   </div>
+  <script src="js/intro.js"></script>
   <script src="js/tracking.js"></script>
   <script src="js/main.js"></script>
   <script src="js/eventemitter.js"></script>
   <script src="js/webcam.js"></script>
   <script src="js/links.js"></script>
-  <script src="js/intro.js"></script>
 </body>
 
 </html>

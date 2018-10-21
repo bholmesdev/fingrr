@@ -52,6 +52,7 @@
     left: -50%;
   }
   60% {
+<<<<<<< HEAD
     left: 50%;
   }
   70% {
@@ -68,5 +69,35 @@
   }
   100% {
     left: 50%;
+=======
+    left: 30%;
+  }
+  70% {
+    left: 30%;
+  }
+  73% {
+    left: 20%;
+  }
+  85% {
+    left: 30%;
+  }
+  88% {
+    left: 20%;
+  }
+  100% {
+    left: 30%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.8);
+>>>>>>> intro_sequence_10.20.18
   }
 }

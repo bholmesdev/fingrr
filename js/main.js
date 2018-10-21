@@ -9,6 +9,80 @@ const CAMERA_POSITION = new THREE.Vector3(0, 0, -1);
 const DEFAULT_CAMERA_SHAKE = 1;
 const SHAKE_INTENSITY = 1;
 
+var gameClockTimers = [];
+var gameClockIntervals = [];
+
+function setTimeoutOnGameClock() {
+	const handler = arguments[0];
+	const delay = arguments[1];
+	const args = Array.prototype.slice.call(arguments, 2);
+
+	let firstEmptyIndex = gameClockTimers.indexOf(undefined);
+	if (firstEmptyIndex === -1) {
+		firstEmptyIndex = gameClockTimers.length;
+	}
+
+	gameClockTimers.splice(firstEmptyIndex, 1, {
+		executeIn: delay / 1000,
+		handler: function () {
+			handler.apply(this, args);
+		}
+	});
+
+	return firstEmptyIndex;
+}
+
+function setIntervalOnGameClock() {
+	const handler = arguments[0];
+	const delay = arguments[1];
+	const args = Array.prototype.slice.call(arguments, 2);
+
+	let firstEmptyIndex = gameClockIntervals.indexOf(undefined);
+	if (firstEmptyIndex === -1) {
+		firstEmptyIndex = gameClockIntervals.length;
+	}
+
+	gameClockIntervals.splice(firstEmptyIndex, 1, {
+		executeIn: delay / 1000,
+		interval: delay / 1000,
+		handler: function () {
+			handler.apply(this, args);
+		}
+	});
+
+	return firstEmptyIndex;
+}
+
+function clearTimeoutOnGameClock(id) {
+	gameClockTimers[id] = undefined;
+}
+
+function clearIntervalOnGameClock(id) {
+	gameClockIntervals[id] = undefined;
+}
+
+function handleGameTimers(delta) {
+	gameClockTimers.map(function (timer) {
+		timer.executeIn -= delta;
+		if (timer.executeIn <= 0) {
+			timer.handler();
+			return undefined;
+		} else {
+			return timer;
+		}
+	});
+	gameClockIntervals.map(function (interval) {
+		interval.executeIn -= delta;
+		if (interval.executeIn <= 0) {
+			interval.handler();
+			do {
+				interval.executeIn += interval.interval;
+			} while (interval.executeIn <= 0);
+		}
+		return interval;
+	});
+}
+
 const visibleHeightAtZDepth = ( depth, camera ) => {
   // compensate for cameras not positioned at z=0
   const cameraOffset = camera.position.z;
@@ -167,7 +241,7 @@ function generateAsteroid() {
 var level = 1;
 var levelElem = document.querySelector('#level');
 var intervalMilli = 3000;
-var asteroidInterval = setInterval(generateAsteroid, intervalMilli);
+var asteroidInterval = setIntervalOnGameClock(generateAsteroid, intervalMilli);
 var asteroidSpeed = 0.05;
 
 var sphereColors = [0x490E61, 0xFA1505, 0x32FA05, 0xFA056F, 0xFFF001, 0xFA056F];
@@ -177,8 +251,8 @@ var sphereColorIdx = 0;
 var asteroidColorIdx = 0;
 
 function levelUp() {
-	clearInterval(asteroidInterval);
-	asteroidInterval = setInterval(generateAsteroid, intervalMilli*=0.8)
+	clearIntervalOnGameClock(asteroidInterval);
+	asteroidInterval = setIntervalOnGameClock(generateAsteroid, intervalMilli*=0.8)
 	asteroidSpeed += 0.005;
 	sphereColorIdx++;
 	asteroidColorIdx++;
@@ -190,17 +264,11 @@ function levelUp() {
 
 }
 
-var levelupInterval = setInterval(levelUp, 10000);
+var levelupInterval = setIntervalOnGameClock(levelUp, 10000);
 var plasmaBalls = [];
-window.addEventListener("mousedown", onMouseDown);
+// window.addEventListener("mousedown", onMouseDown);
 
 function onMouseDown() {
-  	let plasmaBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
-  		color: "aqua"
-  	}));
-  	plasmaBall.position.copy(emitter.getWorldPosition()); // start position - the tip of the weapon
-  	plasmaBall.quaternion.copy(weapon.quaternion); // apply camera's quaternion
-  	scene.add(plasmaBall);
 	var pew = new THREE.Audio(listener); 
 	audioBuffers.pew.then(function(buffer) {
 		pew.setBuffer(buffer);
@@ -208,6 +276,14 @@ function onMouseDown() {
 		pew.setVolume(0.5);
 		pew.play()
 	});
+
+	if (!isPlay) return;
+  	let plasmaBall = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 4), new THREE.MeshBasicMaterial({
+  		color: "aqua"
+  	}));
+  	plasmaBall.position.copy(emitter.getWorldPosition()); // start position - the tip of the weapon
+  	plasmaBall.quaternion.copy(weapon.quaternion); // apply camera's quaternion
+  	scene.add(plasmaBall);
 	plasmaBalls.push(plasmaBall);
 }
 
@@ -309,6 +385,7 @@ var gameOverScoreElem = document.querySelector('#game-over-score');
 	requestAnimationFrame(render);
   	delta = clock.getDelta();
 	if (!isPlay) return;
+	handleGameTimers(delta);
   	plasmaBalls.forEach(b => {
 		if (isCollision(b)) {
 			console.log("REMOVED BULLET AND ASTEROID");
@@ -361,8 +438,8 @@ var gameOverScoreElem = document.querySelector('#game-over-score');
 				});
 			} else {
 				console.log("GAME OVER");
-				clearInterval(asteroidInterval);
-				clearInterval(levelupInterval);
+				clearIntervalOnGameClock(asteroidInterval);
+				clearIntervalOnGameClock(levelupInterval);
 				isPlay = false;
 				var gameover = new THREE.Audio(listener);
 				audioBuffers.gameOver.then(function(buffer) {

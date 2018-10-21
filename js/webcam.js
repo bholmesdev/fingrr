@@ -382,7 +382,7 @@ const tracker = new tracking.ColorTracker(['thumb', 'finger']);
 tracker.setMinDimension(10);
 tracker.setMinGroupSize(15);
 
-function startCalibrationUI(isInitial) {
+function startCalibrationUI() {
     document.querySelector('#hud').classList.add('calibration');
     return calibrate(document.getElementById('calibration-help')).then(function () {
         return new Promise(function (resolve) {
@@ -390,9 +390,6 @@ function startCalibrationUI(isInitial) {
         });
     }).then(function () {
         document.querySelector('#hud').classList.remove('calibration');
-        if (isInitial) {
-            isPlay = true;
-        }
     });
 }
 
@@ -401,4 +398,6 @@ initialize({
     tracker: tracker
 }).then(function () {
     return startCalibrationUI(true);
+}).then(function () {
+    isPlay = true;
 });

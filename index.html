@@ -171,6 +171,24 @@
     #hud .pause-screen p a:visited {
       color: #fff;
     }
+
+    #pause-btn-container {
+      position: relative;
+    }
+
+    #pause-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 16px;
+      color: #c0c0c0;
+      transition: color 0.5s ease;
+      text-decoration: none;
+    }
+
+    #pause-btn:hover, #pause-btn:active {
+      color: #fff;
+    }
   </style>
   <script src="https://threejs.org/build/three.min.js"></script>
 </head>
@@ -196,6 +214,9 @@
         </div>
         <div class="right">Score: <span id="score">0</span></div>
       </div>
+      <div id="pause-btn-container">
+        <a href="javascript:void 0" id="pause-btn">Pause</a>
+      </div>
       <div id="webcam">
         <video width="600" height="450" preload autoplay loop muted></video>
         <canvas width="600" height="450"></canvas>
@@ -209,7 +230,7 @@
     </div>
     <div class="pause-screen">
       <h1>Paused</h1>
-      <p><a href="/">Click here to resume</a>, or <a href="javascript:void 0" id="recalibrate-link">click here to recalibrate</a>.</p>
+      <p>You can <a href="javascript:void 0" id="resume-link">resume the game</a>, <a href="javascript:void 0" id="recalibrate-link">recalibrate your controller</a>, or <a href="/">restart the game</a>.</p>
     </div>
     <div class="calibration-screen">
       <h1>Calibration</h1>
@@ -224,6 +245,7 @@
   <script src="js/main.js"></script>
   <script src="js/eventemitter.js"></script>
   <script src="js/webcam.js"></script>
+  <script src="js/links.js"></script>
 </body>
 
 </html>
